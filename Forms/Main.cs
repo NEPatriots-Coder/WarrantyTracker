@@ -8,7 +8,7 @@ namespace WarrantyTracker.Forms
 {
     public partial class MainForm : Form
     {
-        // Initialize all controls at declaration
+        // Form controls
         private readonly TableLayoutPanel mainLayout = new();
         private readonly Panel headerPanel = new();
         private readonly Label headerLabel = new();
@@ -16,16 +16,57 @@ namespace WarrantyTracker.Forms
         private readonly TextBox txtSerialNumber = new();
         private readonly DateTimePicker dtpPurchaseDate = new();
         private readonly DateTimePicker dtpWarrantyExpiration = new();
+        private readonly ComboBox cboWarrantyPlan = new();
+        private readonly Label lblWarrantyPrice = new();
         private readonly TextBox txtPurchasePrice = new();
         private readonly TextBox txtMaintenanceNotes = new();
         private readonly Button btnSubmit = new();
         private readonly Label lblValidation = new();
         private readonly ErrorProvider errorProvider = new();
 
+        public class WarrantyPlan
+        {
+            public string Duration { get; set; }
+            public decimal Price { get; set; }
+            public int Days { get; set; }
+
+            public override string ToString() => $"{Duration} (${Price:F2})";
+        }
+
         public MainForm()
         {
             InitializeComponent();
             SetupValidation();
+        }
+
+        private void InitializeWarrantyPlans()
+        {
+            if (cboWarrantyPlan == null) return;
+
+            var plans = new[]
+            {
+                new WarrantyPlan { Duration = "30 Day Warranty", Price = 7.99M, Days = 30 },
+                new WarrantyPlan { Duration = "60 Day Warranty", Price = 14.99M, Days = 60 },
+                new WarrantyPlan { Duration = "90 Day Warranty", Price = 24.99M, Days = 90 }
+            };
+
+            cboWarrantyPlan.DataSource = plans;
+            cboWarrantyPlan.SelectedIndexChanged += WarrantyPlan_SelectedIndexChanged;
+        }
+
+        private void WarrantyPlan_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            if (cboWarrantyPlan == null || dtpPurchaseDate == null || 
+                dtpWarrantyExpiration == null) return;
+
+            var selectedPlan = cboWarrantyPlan.SelectedItem as WarrantyPlan;
+            if (selectedPlan != null)
+            {
+                dtpWarrantyExpiration.Value = dtpPurchaseDate.Value.AddDays(selectedPlan.Days);
+                
+                if (lblWarrantyPrice != null)
+                    lblWarrantyPrice.Text = $"Warranty Price: ${selectedPlan.Price:F2}";
+            }
         }
 
         private void SetupValidation()
@@ -109,7 +150,7 @@ namespace WarrantyTracker.Forms
             // Configure main layout
             mainLayout.Dock = DockStyle.Fill;
             mainLayout.ColumnCount = 2;
-            mainLayout.RowCount = 8;
+            mainLayout.RowCount = 9; // Increased for new controls
             mainLayout.Padding = new Padding(20);
             mainLayout.BackColor = Color.White;
 
@@ -144,13 +185,27 @@ namespace WarrantyTracker.Forms
         {
             if (txtItemName == null || txtSerialNumber == null || dtpPurchaseDate == null ||
                 dtpWarrantyExpiration == null || txtPurchasePrice == null || 
-                txtMaintenanceNotes == null || btnSubmit == null) return;
+                txtMaintenanceNotes == null || btnSubmit == null || cboWarrantyPlan == null) return;
 
             ConfigureTextBox(txtItemName, "Enter item name");
             ConfigureTextBox(txtSerialNumber, "Enter serial number");
             
             ConfigureDatePicker(dtpPurchaseDate);
             ConfigureDatePicker(dtpWarrantyExpiration);
+            
+            // Configure warranty plan dropdown
+            cboWarrantyPlan.Width = 200;
+            cboWarrantyPlan.Font = new Font("Segoe UI", 10F);
+            cboWarrantyPlan.DropDownStyle = ComboBoxStyle.DropDownList;
+
+            if (lblWarrantyPrice != null)
+            {
+                lblWarrantyPrice.AutoSize = true;
+                lblWarrantyPrice.Font = new Font("Segoe UI", 10F);
+                lblWarrantyPrice.ForeColor = Color.FromArgb(51, 122, 183);
+            }
+
+            InitializeWarrantyPlans();
             
             ConfigureTextBox(txtPurchasePrice, "Enter price");
             
@@ -201,8 +256,15 @@ namespace WarrantyTracker.Forms
             AddFormRow("Serial Number:", txtSerialNumber, 1);
             AddFormRow("Purchase Date:", dtpPurchaseDate, 2);
             AddFormRow("Warranty Expiration:", dtpWarrantyExpiration, 3);
-            AddFormRow("Purchase Price:", txtPurchasePrice, 4);
-            AddFormRow("Maintenance Notes:", txtMaintenanceNotes, 5);
+            AddFormRow("Warranty Plan:", cboWarrantyPlan, 4);
+
+            if (mainLayout.Controls != null && lblWarrantyPrice != null)
+            {
+                mainLayout.Controls.Add(lblWarrantyPrice, 1, 5);
+            }
+
+            AddFormRow("Purchase Price:", txtPurchasePrice, 6);
+            AddFormRow("Maintenance Notes:", txtMaintenanceNotes, 7);
 
             var buttonPanel = new Panel { Dock = DockStyle.Fill };
             if (btnSubmit != null && buttonPanel.Controls != null)
@@ -210,9 +272,9 @@ namespace WarrantyTracker.Forms
 
             if (mainLayout.Controls != null)
             {
-                mainLayout.Controls.Add(buttonPanel, 1, 6);
+                mainLayout.Controls.Add(buttonPanel, 1, 8);
                 if (lblValidation != null)
-                    mainLayout.Controls.Add(lblValidation, 1, 7);
+                    mainLayout.Controls.Add(lblValidation, 1, 9);
             }
         }
 
@@ -238,7 +300,10 @@ namespace WarrantyTracker.Forms
             {
                 if (txtItemName == null || txtSerialNumber == null || dtpPurchaseDate == null ||
                     dtpWarrantyExpiration == null || txtPurchasePrice == null || 
-                    txtMaintenanceNotes == null) return;
+                    txtMaintenanceNotes == null || cboWarrantyPlan == null) return;
+
+                var selectedPlan = cboWarrantyPlan.SelectedItem as WarrantyPlan;
+                var warrantyPrice = selectedPlan?.Price ?? 0M;
 
                 var item = new PurchaseItem
                 {
@@ -247,11 +312,12 @@ namespace WarrantyTracker.Forms
                     PurchaseDate = dtpPurchaseDate.Value,
                     WarrantyExpirationDate = dtpWarrantyExpiration.Value,
                     PurchasePrice = decimal.Parse(txtPurchasePrice.Text),
-                    MaintenanceNotes = txtMaintenanceNotes.Text
+                    MaintenanceNotes = txtMaintenanceNotes.Text,
+                    WarrantyPrice = warrantyPrice
                 };
 
-                MessageBox.Show("Item successfully saved!", "Success",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"Item successfully saved!\nWarranty Plan: {selectedPlan?.Duration}\nTotal Cost: ${item.PurchasePrice + warrantyPrice:F2}", 
+                    "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 ClearForm();
             }

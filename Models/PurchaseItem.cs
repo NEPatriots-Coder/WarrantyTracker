@@ -1,4 +1,3 @@
-
 namespace WarrantyTracker.Models
 {
     public class PurchaseItem
@@ -9,6 +8,7 @@ namespace WarrantyTracker.Models
         public DateTime PurchaseDate { get; set; }
         public DateTime WarrantyExpirationDate { get; set; }
         public decimal PurchasePrice { get; set; }
+        public decimal WarrantyPrice { get; set; }
         public string MaintenanceNotes { get; set; } = string.Empty;
     }
 }
