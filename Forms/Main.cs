@@ -8,18 +8,19 @@ namespace WarrantyTracker.Forms
 {
     public partial class MainForm : Form
     {
-        private TableLayoutPanel? mainLayout;
-        private Panel? headerPanel;
-        private Label? headerLabel;
-        private TextBox? txtItemName;
-        private TextBox? txtSerialNumber;
-        private DateTimePicker? dtpPurchaseDate;
-        private DateTimePicker? dtpWarrantyExpiration;
-        private TextBox? txtPurchasePrice;
-        private TextBox? txtMaintenanceNotes;
-        private Button? btnSubmit;
-        private Label? lblValidation;
-        private ErrorProvider? errorProvider;
+        // Initialize all controls at declaration
+        private readonly TableLayoutPanel mainLayout = new();
+        private readonly Panel headerPanel = new();
+        private readonly Label headerLabel = new();
+        private readonly TextBox txtItemName = new();
+        private readonly TextBox txtSerialNumber = new();
+        private readonly DateTimePicker dtpPurchaseDate = new();
+        private readonly DateTimePicker dtpWarrantyExpiration = new();
+        private readonly TextBox txtPurchasePrice = new();
+        private readonly TextBox txtMaintenanceNotes = new();
+        private readonly Button btnSubmit = new();
+        private readonly Label lblValidation = new();
+        private readonly ErrorProvider errorProvider = new();
 
         public MainForm()
         {
@@ -27,187 +28,42 @@ namespace WarrantyTracker.Forms
             SetupValidation();
         }
 
-        private void InitializeComponent()
-        {
-            // Form settings
-            this.Text = "Warranty Tracking System";
-            this.Size = new Size(800, 600);
-            this.MinimumSize = new Size(600, 500);
-            this.BackColor = Color.FromArgb(240, 248, 255); // AliceBlue
-            this.Font = new Font("Segoe UI", 10F);
-            this.Padding = new Padding(10);
-
-            // Initialize ErrorProvider
-            errorProvider = new ErrorProvider();
-            errorProvider.BlinkStyle = ErrorBlinkStyle.NeverBlink;
-
-            // Create main layout
-            mainLayout = new TableLayoutPanel
-            {
-                Dock = DockStyle.Fill,
-                ColumnCount = 2,
-                RowCount = 8,
-                Padding = new Padding(20),
-                BackColor = Color.White,
-            };
-
-            // Header Panel
-            headerPanel = new Panel
-            {
-                Dock = DockStyle.Top,
-                Height = 60,
-                BackColor = Color.FromArgb(51, 122, 183) // Bootstrap primary blue
-            };
-
-            headerLabel = new Label
-            {
-                Text = "Warranty Item Registration",
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 16F, FontStyle.Bold),
-                AutoSize = true,
-                Location = new Point(20, 15)
-            };
-            headerPanel.Controls.Add(headerLabel);
-
-            // Initialize controls with modern styling
-            InitializeControls();
-
-            // Add controls to layout
-            AddControlsToLayout();
-
-            // Add layout to form
-            this.Controls.Add(mainLayout);
-            this.Controls.Add(headerPanel);
-            mainLayout.Top = headerPanel.Height;
-        }
-
-        private void InitializeControls()
-        {
-            // Create all input controls
-            txtItemName = CreateTextBox("Enter item name");
-            txtSerialNumber = CreateTextBox("Enter serial number");
-            
-            dtpPurchaseDate = new DateTimePicker
-            {
-                Format = DateTimePickerFormat.Short,
-                Width = 200,
-                Font = new Font("Segoe UI", 10F),
-                Value = DateTime.Now
-            };
-
-            dtpWarrantyExpiration = new DateTimePicker
-            {
-                Format = DateTimePickerFormat.Short,
-                Width = 200,
-                Font = new Font("Segoe UI", 10F),
-                Value = DateTime.Now.AddYears(1)
-            };
-
-            txtPurchasePrice = CreateTextBox("Enter price");
-
-            txtMaintenanceNotes = CreateTextBox("Enter maintenance notes");
-            txtMaintenanceNotes.Multiline = true;
-            txtMaintenanceNotes.Height = 100;
-
-            btnSubmit = new Button
-            {
-                Text = "Submit",
-                Width = 120,
-                Height = 40,
-                BackColor = Color.FromArgb(51, 122, 183),
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
-                FlatStyle = FlatStyle.Flat,
-                Cursor = Cursors.Hand
-            };
-            btnSubmit.Click += btnSubmit_Click;
-
-            lblValidation = new Label
-            {
-                AutoSize = true,
-                ForeColor = Color.Red,
-                Font = new Font("Segoe UI", 9F)
-            };
-        }
-
-        private TextBox CreateTextBox(string placeholder)
-        {
-            var textBox = new TextBox
-            {
-                Width = 200,
-                Font = new Font("Segoe UI", 10F),
-                BorderStyle = BorderStyle.FixedSingle,
-                Padding = new Padding(5),
-            };
-            
-            return textBox;
-        }
-
-        private void AddControlsToLayout()
-        {
-            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30F));
-            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 70F));
-
-            AddFormRow("Item Name:", txtItemName, 0);
-            AddFormRow("Serial Number:", txtSerialNumber, 1);
-            AddFormRow("Purchase Date:", dtpPurchaseDate, 2);
-            AddFormRow("Warranty Expiration:", dtpWarrantyExpiration, 3);
-            AddFormRow("Purchase Price:", txtPurchasePrice, 4);
-            AddFormRow("Maintenance Notes:", txtMaintenanceNotes, 5);
-
-            // Add submit button in its own row
-            var buttonPanel = new Panel { Dock = DockStyle.Fill };
-            buttonPanel.Controls.Add(btnSubmit);
-            mainLayout.Controls.Add(buttonPanel, 1, 6);
-
-            // Add validation label in the last row
-            mainLayout.Controls.Add(lblValidation, 1, 7);
-        }
-
-        private void AddFormRow(string labelText, Control? control, int row)
-{
-    if (control == null) return;
-    
-    var label = new Label
-    {
-        Text = labelText,
-        AutoSize = true,
-        Anchor = AnchorStyles.Left | AnchorStyles.Top,
-        Padding = new Padding(5)
-    };
-
-    mainLayout.Controls.Add(label, 0, row);
-    mainLayout.Controls.Add(control, 1, row);
-}
-
         private void SetupValidation()
         {
-            txtItemName.Validating += (s, e) => ValidateControl(txtItemName, e, "Item name is required");
-            txtSerialNumber.Validating += (s, e) => ValidateControl(txtSerialNumber, e, "Serial number is required");
-            txtPurchasePrice.Validating += ValidatePurchasePrice;
-            dtpWarrantyExpiration.ValueChanged += ValidateWarrantyDate;
+            if (txtItemName != null)
+                txtItemName.Validating += (s, e) => ValidateControl(txtItemName, e, "Item name is required");
+            
+            if (txtSerialNumber != null)
+                txtSerialNumber.Validating += (s, e) => ValidateControl(txtSerialNumber, e, "Serial number is required");
+            
+            if (txtPurchasePrice != null)
+                txtPurchasePrice.Validating += ValidatePurchasePrice;
+            
+            if (dtpWarrantyExpiration != null)
+                dtpWarrantyExpiration.ValueChanged += ValidateWarrantyDate;
         }
 
         private void ValidateControl(Control? control, CancelEventArgs e, string errorMessage)
-{
-    if (control == null) return;
-    
-    if (string.IsNullOrWhiteSpace(control.Text))
-    {
-        e.Cancel = true;
-        errorProvider?.SetError(control, errorMessage);
-        lblValidation.Text = errorMessage;
-    }
-    else
-    {
-        errorProvider?.SetError(control, "");
-        lblValidation.Text = "";
-    }
-}
-
-     
-        private void ValidatePurchasePrice(object sender, CancelEventArgs e)
         {
+            if (control == null || errorProvider == null || lblValidation == null) return;
+
+            if (string.IsNullOrWhiteSpace(control.Text))
+            {
+                e.Cancel = true;
+                errorProvider.SetError(control, errorMessage);
+                lblValidation.Text = errorMessage;
+            }
+            else
+            {
+                errorProvider.SetError(control, "");
+                lblValidation.Text = "";
+            }
+        }
+
+        private void ValidatePurchasePrice(object? sender, CancelEventArgs e)
+        {
+            if (txtPurchasePrice == null || errorProvider == null || lblValidation == null) return;
+
             if (!decimal.TryParse(txtPurchasePrice.Text, out decimal price) || price <= 0)
             {
                 e.Cancel = true;
@@ -221,8 +77,11 @@ namespace WarrantyTracker.Forms
             }
         }
 
-        private void ValidateWarrantyDate(object sender, EventArgs e)
+        private void ValidateWarrantyDate(object? sender, EventArgs e)
         {
+            if (dtpWarrantyExpiration == null || dtpPurchaseDate == null || 
+                errorProvider == null || lblValidation == null) return;
+
             if (dtpWarrantyExpiration.Value < dtpPurchaseDate.Value)
             {
                 errorProvider.SetError(dtpWarrantyExpiration, "Warranty date must be after purchase date");
@@ -235,8 +94,174 @@ namespace WarrantyTracker.Forms
             }
         }
 
+        private void InitializeComponent()
+        {
+            if (mainLayout == null || headerPanel == null || headerLabel == null) return;
+
+            // Form settings
+            Text = "Warranty Tracking System";
+            Size = new Size(800, 600);
+            MinimumSize = new Size(600, 500);
+            BackColor = Color.FromArgb(240, 248, 255); // AliceBlue
+            Font = new Font("Segoe UI", 10F);
+            Padding = new Padding(10);
+
+            // Configure main layout
+            mainLayout.Dock = DockStyle.Fill;
+            mainLayout.ColumnCount = 2;
+            mainLayout.RowCount = 8;
+            mainLayout.Padding = new Padding(20);
+            mainLayout.BackColor = Color.White;
+
+            // Configure header
+            headerPanel.Dock = DockStyle.Top;
+            headerPanel.Height = 60;
+            headerPanel.BackColor = Color.FromArgb(51, 122, 183);
+
+            headerLabel.Text = "Warranty Item Registration";
+            headerLabel.ForeColor = Color.White;
+            headerLabel.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
+            headerLabel.AutoSize = true;
+            headerLabel.Location = new Point(20, 15);
+
+            if (headerPanel.Controls != null)
+                headerPanel.Controls.Add(headerLabel);
+
+            InitializeControls();
+            AddControlsToLayout();
+
+            if (Controls != null)
+            {
+                Controls.Add(mainLayout);
+                Controls.Add(headerPanel);
+            }
+
+            if (mainLayout != null)
+                mainLayout.Top = headerPanel.Height;
+        }
+
+        private void InitializeControls()
+        {
+            if (txtItemName == null || txtSerialNumber == null || dtpPurchaseDate == null ||
+                dtpWarrantyExpiration == null || txtPurchasePrice == null || 
+                txtMaintenanceNotes == null || btnSubmit == null) return;
+
+            ConfigureTextBox(txtItemName, "Enter item name");
+            ConfigureTextBox(txtSerialNumber, "Enter serial number");
+            
+            ConfigureDatePicker(dtpPurchaseDate);
+            ConfigureDatePicker(dtpWarrantyExpiration);
+            
+            ConfigureTextBox(txtPurchasePrice, "Enter price");
+            
+            ConfigureTextBox(txtMaintenanceNotes, "Enter maintenance notes");
+            txtMaintenanceNotes.Multiline = true;
+            txtMaintenanceNotes.Height = 100;
+
+            ConfigureSubmitButton();
+        }
+
+        private void ConfigureTextBox(TextBox textBox, string placeholder)
+        {
+            textBox.Width = 200;
+            textBox.Font = new Font("Segoe UI", 10F);
+            textBox.BorderStyle = BorderStyle.FixedSingle;
+            textBox.Padding = new Padding(5);
+        }
+
+        private void ConfigureDatePicker(DateTimePicker picker)
+        {
+            picker.Format = DateTimePickerFormat.Short;
+            picker.Width = 200;
+            picker.Font = new Font("Segoe UI", 10F);
+        }
+
+        private void ConfigureSubmitButton()
+        {
+            if (btnSubmit == null) return;
+
+            btnSubmit.Text = "Submit";
+            btnSubmit.Width = 120;
+            btnSubmit.Height = 40;
+            btnSubmit.BackColor = Color.FromArgb(51, 122, 183);
+            btnSubmit.ForeColor = Color.White;
+            btnSubmit.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnSubmit.FlatStyle = FlatStyle.Flat;
+            btnSubmit.Click += btnSubmit_Click;
+        }
+
+        private void AddControlsToLayout()
+        {
+            if (mainLayout == null) return;
+
+            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30F));
+            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 70F));
+
+            AddFormRow("Item Name:", txtItemName, 0);
+            AddFormRow("Serial Number:", txtSerialNumber, 1);
+            AddFormRow("Purchase Date:", dtpPurchaseDate, 2);
+            AddFormRow("Warranty Expiration:", dtpWarrantyExpiration, 3);
+            AddFormRow("Purchase Price:", txtPurchasePrice, 4);
+            AddFormRow("Maintenance Notes:", txtMaintenanceNotes, 5);
+
+            var buttonPanel = new Panel { Dock = DockStyle.Fill };
+            if (btnSubmit != null && buttonPanel.Controls != null)
+                buttonPanel.Controls.Add(btnSubmit);
+
+            if (mainLayout.Controls != null)
+            {
+                mainLayout.Controls.Add(buttonPanel, 1, 6);
+                if (lblValidation != null)
+                    mainLayout.Controls.Add(lblValidation, 1, 7);
+            }
+        }
+
+        private void AddFormRow(string labelText, Control? control, int row)
+        {
+            if (control == null || mainLayout == null || mainLayout.Controls == null) return;
+
+            var label = new Label
+            {
+                Text = labelText,
+                AutoSize = true,
+                Anchor = AnchorStyles.Left | AnchorStyles.Top,
+                Padding = new Padding(5)
+            };
+
+            mainLayout.Controls.Add(label, 0, row);
+            mainLayout.Controls.Add(control, 1, row);
+        }
+
+        private void btnSubmit_Click(object? sender, EventArgs e)
+        {
+            if (ValidateInput())
+            {
+                if (txtItemName == null || txtSerialNumber == null || dtpPurchaseDate == null ||
+                    dtpWarrantyExpiration == null || txtPurchasePrice == null || 
+                    txtMaintenanceNotes == null) return;
+
+                var item = new PurchaseItem
+                {
+                    Name = txtItemName.Text,
+                    SerialNumber = txtSerialNumber.Text,
+                    PurchaseDate = dtpPurchaseDate.Value,
+                    WarrantyExpirationDate = dtpWarrantyExpiration.Value,
+                    PurchasePrice = decimal.Parse(txtPurchasePrice.Text),
+                    MaintenanceNotes = txtMaintenanceNotes.Text
+                };
+
+                MessageBox.Show("Item successfully saved!", "Success",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                ClearForm();
+            }
+        }
+
         private bool ValidateInput()
         {
+            if (txtItemName == null || txtSerialNumber == null || txtPurchasePrice == null ||
+                dtpWarrantyExpiration == null || dtpPurchaseDate == null) return false;
+
             if (string.IsNullOrWhiteSpace(txtItemName.Text))
             {
                 ShowError("Item name is required.");
@@ -267,43 +292,28 @@ namespace WarrantyTracker.Forms
                 return false;
             }
 
-            lblValidation.Text = "";
+            if (lblValidation != null)
+                lblValidation.Text = "";
+                
             return true;
         }
 
         private void ShowError(string message)
         {
-            lblValidation.Text = message;
-        }
-
-        private void btnSubmit_Click(object sender, EventArgs e)
-        {
-            if (ValidateInput())
-            {
-                var item = new PurchaseItem
-                {
-                    Name = txtItemName.Text,
-                    SerialNumber = txtSerialNumber.Text,
-                    PurchaseDate = dtpPurchaseDate.Value,
-                    WarrantyExpirationDate = dtpWarrantyExpiration.Value,
-                    PurchasePrice = decimal.Parse(txtPurchasePrice.Text),
-                    MaintenanceNotes = txtMaintenanceNotes.Text
-                };
-
-                // TODO: Add database connectivity in Module 5
-                MessageBox.Show("Item successfully saved!", "Success",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                ClearForm();
-            }
+            if (lblValidation != null)
+                lblValidation.Text = message;
         }
 
         private void ClearForm()
         {
+            if (txtItemName == null || txtSerialNumber == null || dtpPurchaseDate == null ||
+                dtpWarrantyExpiration == null || txtPurchasePrice == null || 
+                txtMaintenanceNotes == null || lblValidation == null || errorProvider == null) return;
+
             txtItemName.Clear();
             txtSerialNumber.Clear();
             dtpPurchaseDate.Value = DateTime.Now;
-            dtpWarrantyExpiration.Value = DateTime.Now.AddYears(1);
+            dtpWarrantyExpiration.Value = DateTime.Now;
             txtPurchasePrice.Clear();
             txtMaintenanceNotes.Clear();
             lblValidation.Text = "";
