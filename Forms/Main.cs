@@ -26,7 +26,7 @@ namespace WarrantyTracker.Forms
 
         public class WarrantyPlan
         {
-            public string Duration { get; set; }
+            public required string Duration { get; set; }
             public decimal Price { get; set; }
             public int Days { get; set; }
 
@@ -194,7 +194,7 @@ namespace WarrantyTracker.Forms
             ConfigureDatePicker(dtpWarrantyExpiration);
             
             // Configure warranty plan dropdown
-            cboWarrantyPlan.Width = 200;
+            cboWarrantyPlan.Width = 300;
             cboWarrantyPlan.Font = new Font("Segoe UI", 10F);
             cboWarrantyPlan.DropDownStyle = ComboBoxStyle.DropDownList;
 
