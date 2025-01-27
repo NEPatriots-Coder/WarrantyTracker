@@ -140,11 +140,11 @@ namespace WarrantyTracker.Forms
             if (mainLayout == null || headerPanel == null || headerLabel == null) return;
 
             // Form settings
-            Text = "Warranty Tracking System";
+            Text = "Lamar's Warranty Tracking System";
             Size = new Size(800, 600);
             MinimumSize = new Size(600, 500);
             BackColor = Color.FromArgb(240, 248, 255); // AliceBlue
-            Font = new Font("Segoe UI", 10F);
+            Font = new Font("Aptos", 10F);
             Padding = new Padding(10);
 
             // Configure main layout
