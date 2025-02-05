@@ -26,6 +26,19 @@
             "name": "LamarSQL",
             "database": "World",
             "username": "root"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "LamarSQL",
+            "database": "warranty_db",
+            "username": "root"
         }
     ]
 }
